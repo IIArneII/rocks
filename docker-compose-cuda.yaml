@@ -1,0 +1,28 @@
+services:
+  cuda-workspace:
+    build:
+      context: .
+      args:
+        CUDA_VERSION: "12.4.1"
+    image: cuda-workspace:latest
+    container_name: cuda-workspace
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - NCCL_P2P_DISABLE=1
+      - NCCL_IB_DISABLE=1
+    volumes:
+      - .:/workspace:rw
+    working_dir: /workspace
+    shm_size: "16gb"
+    ports:
+      - "8888:8888" # jupyter
+
+# Start in the container: micromamba run -n sam bash
